@@ -1,11 +1,12 @@
 # Bỏ qua toàn bộ thư mục data và data_test
 data/
 data_test/
-
+*.txt
 # Bỏ qua các file cấu hình và bộ nhớ đệm ẩn (Khuyên dùng)
 .idea/
 __pycache__/
 *.pyc
+
 
 # Bỏ qua file notebook chạy thử nếu muốn
 test.ipynb
