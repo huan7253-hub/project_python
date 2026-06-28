@@ -15,7 +15,7 @@ Tài liệu này hướng dẫn các thành viên trong nhóm thiết lập môi
 ## Bước 2: Cào dữ liệu chi tiết (Giai đoạn 2)
 1. Mở file txt đính kèm trong dự án để xem danh sách các danh mục (Hạng mục sách).
 2. Mở file stage2_crawl_raw.py và cấu hình lại các thông số ở đầu file:
-- Tìm biến CATEGORY_NAME và thay thế bằng tên danh mục bạn được phân công (Ví dụ: "Kinh_Te" hoặc "Van_Hoc").
+- Tìm biến CATEGORY_NAME và thay thế bằng tên danh mục bạn được phân công.
 - Có thể tùy chỉnh số luồng chạy song song tại biến MAX_THREADS (Khuyến nghị: Giữ từ 5 đến 8).
 3. Chạy file: Bấm nút Run file Python trên VS Code.
 4. Kiểm tra đầu ra: Vào thư mục data/ xem hệ thống đã tự tạo ra file thô .jsonl tương ứng với danh mục đó chưa
