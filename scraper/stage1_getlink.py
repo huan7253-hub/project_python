@@ -11,7 +11,7 @@ END_PAGE =  170 # Chạy thử nghiệm 3 trang trước
 
 def run_scraper():
     print(f"[+] BẮT ĐẦU CÀO DỮ LIỆU DANH MỤC: {CATEGORY_NAME}")
-    csv_file_path = f"data/{CATEGORY_NAME}_link.csv"
+    csv_file_path = f"data/link/{CATEGORY_NAME}_link.csv"
     
     total_scraped = 0
     

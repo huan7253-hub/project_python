@@ -4,8 +4,8 @@ import csv
 from bs4 import BeautifulSoup
 
 CATEGORY_NAME = 'am-nhac-my-thuat-thoi-trang'
-RAW_JSONL_PATH = f"data/raw/{CATEGORY_NAME}_raw.jsonl"
-OUTPUT_CLEAN_CSV = f"data/clean/{CATEGORY_NAME}_clean.csv"
+RAW_JSONL_PATH = f"../data/raw/{CATEGORY_NAME}_raw.jsonl"
+OUTPUT_CLEAN_CSV = f"../data/clean/{CATEGORY_NAME}_clean.csv"
 
 def clean_text(text):
     """Làm sạch khoảng trắng thừa, dấu tab, dấu xuống dòng trong văn bản thô"""
@@ -96,37 +96,109 @@ def parse_single_record(line_str):
 
     return clean_data
 
-def main():
-    print("[*] Bắt đầu bóc tách và chuẩn hóa dữ liệu sang CSV...")
-    if not os.path.exists(RAW_JSONL_PATH):
-        print(f"[-] Không tìm thấy file dữ liệu thô: {RAW_JSONL_PATH}")
-        return
+# def main():
+#     print("[*] Bắt đầu bóc tách và chuẩn hóa dữ liệu sang CSV...")
+#     if not os.path.exists(RAW_JSONL_PATH):
+#         print(f"[-] Không tìm thấy file dữ liệu thô: {RAW_JSONL_PATH}")
+#         return
 
-    # Danh sách các cột tiêu đề của file CSV đầu ra
+#     # Danh sách các cột tiêu đề của file CSV đầu ra
+#     headers = [
+#         "link", "title", "category_path", "author", "publisher", 
+#         "publish_year", "weight_gr", "page_count", "current_price", 
+#         "old_price", "description"
+#     ]
+
+#     os.makedirs(os.path.dirname(OUTPUT_CLEAN_CSV), exist_ok=True)
+    
+#     success_count = 0
+    
+#     # Đọc ghi theo cơ chế Streaming (Từng dòng một) để bảo vệ RAM
+#     with open(RAW_JSONL_PATH, "r", encoding="utf-8") as infile, \
+#          open(OUTPUT_CLEAN_CSV, "w", newline="", encoding="utf-8") as outfile:
+         
+#         writer = csv.DictWriter(outfile, fieldnames=headers)
+#         writer.writeheader()
+        
+#         for line in infile:
+#             parsed_data = parse_single_record(line)
+#             if parsed_data:
+#                 writer.writerow(parsed_data)
+#                 success_count += 1
+
+#     print(f"[=== HOÀN THÀNH ===] Đã xử lý và xuất thành công {success_count} cuốn sách ra file: {OUTPUT_CLEAN_CSV}")
+
+
+def main():
+    print("[*] Tự động quét thư mục raw và tách dữ liệu theo danh mục...")
+    
+    RAW_DIR = "data/raw"
     headers = [
         "link", "title", "category_path", "author", "publisher", 
         "publish_year", "weight_gr", "page_count", "current_price", 
         "old_price", "description"
     ]
 
-    os.makedirs(os.path.dirname(OUTPUT_CLEAN_CSV), exist_ok=True)
-    
-    success_count = 0
-    
-    # Đọc ghi theo cơ chế Streaming (Từng dòng một) để bảo vệ RAM
-    with open(RAW_JSONL_PATH, "r", encoding="utf-8") as infile, \
-         open(OUTPUT_CLEAN_CSV, "w", newline="", encoding="utf-8") as outfile:
-         
-        writer = csv.DictWriter(outfile, fieldnames=headers)
-        writer.writeheader()
-        
-        for line in infile:
-            parsed_data = parse_single_record(line)
-            if parsed_data:
-                writer.writerow(parsed_data)
-                success_count += 1
+    if not os.path.exists(RAW_DIR):
+        print(f"[-] Thư mục không tồn tại: {RAW_DIR}")
+        return
 
-    print(f"[=== HOÀN THÀNH ===] Đã xử lý và xuất thành công {success_count} cuốn sách ra file: {OUTPUT_CLEAN_CSV}")
+    # TỰ ĐỘNG QUÉT: Tìm tất cả các file có đuôi _raw.jsonl trong thư mục raw
+    raw_files = [f for f in os.listdir(RAW_DIR) if f.endswith("_raw.jsonl")]
+    
+    if not raw_files:
+        print(f"[-] Không tìm thấy file dữ liệu thô (_raw.jsonl) nào trong: {RAW_DIR}")
+        return
+
+    print(f"[+] Phát hiện {len(raw_files)} danh mục cần xử lý.")
+
+    # Chạy vòng lặp tự động trên các file tìm được
+    for file_name in raw_files:
+        # Cắt bỏ đuôi "_raw.jsonl" để lấy lại tên danh mục gốc
+        category = file_name.replace("_raw.jsonl", "")
+        
+        raw_jsonl_path = os.path.join(RAW_DIR, file_name)
+        output_clean_csv = f"data/clean/{category}_clean.csv"
+
+        print(f"--> Đang xử lý danh mục: {category}")
+        os.makedirs(os.path.dirname(output_clean_csv), exist_ok=True)
+
+        # 1. Kiểm tra chống trùng riêng cho file CSV của danh mục này
+        file_exists = os.path.exists(output_clean_csv)
+        processed_links = set()
+        if file_exists:
+            with open(output_clean_csv, "r", encoding="utf-8") as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    if row.get("link"):
+                        processed_links.add(row["link"])
+
+        success_count = 0
+        duplicate_count = 0
+
+        # 2. Đọc file JSONL và ghi tiếp (append) vào file CSV tương ứng
+        with open(raw_jsonl_path, "r", encoding="utf-8") as infile, \
+             open(output_clean_csv, "a", newline="", encoding="utf-8") as outfile:
+             
+            writer = csv.DictWriter(outfile, fieldnames=headers)
+            if not file_exists:
+                writer.writeheader()
+
+            for line in infile:
+                parsed_data = parse_single_record(line)
+                if parsed_data:
+                    # Chống trùng: Trùng link cũ trong file này thì bỏ qua
+                    if parsed_data["link"] in processed_links:
+                        duplicate_count += 1
+                        continue
+                    
+                    writer.writerow(parsed_data)
+                    processed_links.add(parsed_data["link"])
+                    success_count += 1
+
+        print(f"    [ Thêm mới: {success_count} | Trùng: {duplicate_count} ] -> Lưu tại: {output_clean_csv}")
+
+    print("\n[=== HOÀN THÀNH TẤT CẢ DANH MỤC TỰ ĐỘNG ===]")    
 
 if __name__ == "__main__":
     main()

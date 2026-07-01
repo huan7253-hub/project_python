@@ -1,12 +1,22 @@
-# Bỏ qua toàn bộ thư mục data và data_test
-data/
-data_test/
+# Chặn môi trường ảo
+venv/
+.venv/
+env/
 
-# Bỏ qua các file cấu hình và bộ nhớ đệm ẩn (Khuyên dùng)
+# Chặn cấu hình riêng của IDE
 .idea/
-__pycache__/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# Chặn bộ đệm Python
+**/__pycache__/
 *.pyc
 
-
-# Bỏ qua file notebook chạy thử nếu muốn
-test.ipynb
+# CHẶN TOÀN BỘ DATA NẶNG (Quan trọng nhất)
+data/
+*.csv
+*.xlsx

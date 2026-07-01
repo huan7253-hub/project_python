@@ -9,9 +9,9 @@ from bs4 import BeautifulSoup
 import csv
 
 # Cấu hình đường dẫn file
-CATEGORY_NAME = 'giao-khoa-tham-khao'
-INPUT_CSV = f"data/link/{CATEGORY_NAME}_link.csv"
-OUTPUT_JSONL = f"data/raw/{CATEGORY_NAME}_raw.jsonl"
+CATEGORY_NAME = 'kinh-te-chinh-tri-phap-ly'
+INPUT_CSV = f"../data/link/{CATEGORY_NAME}_link.csv"
+OUTPUT_JSONL = f"../data/raw/{CATEGORY_NAME}_raw.jsonl"
 MAX_THREADS = 7
 
 # Khởi tạo Lock để tránh xung đột khi nhiều luồng cùng ghi vào một file JSONL một lúc

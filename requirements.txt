@@ -1,0 +1,15 @@
+# --- HỆ THỐNG GIAO DIỆN & XỬ LÝ DATA CHUNG ---
+streamlit==1.32.0
+pandas==2.2.1
+
+# --- NHÁNH MYSQL ---
+pymysql==1.1.0
+rapidfuzz==3.6.2
+
+# --- NHÁNH AI & VECTOR DB  ---
+chromadb==0.4.24
+sentence-transformers==2.5.1
+
+# --- NHÁNH CÀO DATA ---
+requests==2.31.0
+beautifulsoup4==4.12.3
