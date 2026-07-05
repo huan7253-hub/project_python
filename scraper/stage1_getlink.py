@@ -1,7 +1,7 @@
 import time
 from scraper.network import fetch_html
 from scraper.parser import extract_book_data
-from storage.writer import save_books_to_csv
+from scraper.writer import save_books_to_csv
 
 CATEGORY_NAME = "thieu-nhi"
 BASE_URL = f"https://www.fahasa.com/sach-trong-nuoc/{CATEGORY_NAME}.html?order=created_at&limit=24&p="
